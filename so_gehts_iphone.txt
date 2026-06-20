@@ -1,0 +1,85 @@
+﻿============================================================
+  MedienTracker auf dem iPhone oeffnen
+  Anleitung fuer Angela
+============================================================
+
+VORBEREITUNG (einmalig):
+--------------------------
+1. PC und iPhone muessen im SELBEN WLAN sein!
+   (gleicher Router / gleicher WLAN-Name)
+
+2. Den lokalen Server auf dem PC starten:
+   - Gehe in den Ordner "MedienTracker" auf dem Desktop
+   - Rechtsklick auf "start_server.ps1"
+   - Klicke auf "Mit PowerShell ausfuehren"
+     ODER: "Als Administrator ausfuehren" (besser!)
+
+3. Es oeffnet sich ein schwarzes Fenster.
+   Dort steht deine URL, zum Beispiel:
+   --> http://192.168.1.42:8080
+
+   Diese URL merkst du dir (oder machst ein Foto davon).
+
+
+AUF DEM iPHONE:
+----------------
+4. Oeffne Safari auf dem iPhone
+   (kein Chrome, kein Firefox - nur Safari!)
+
+5. Tippe die URL aus dem schwarzen Fenster ein:
+   z.B.: http://192.168.1.42:8080
+   (Die Zahlen bei dir koennen anders sein!)
+
+6. Die MedienTracker-App oeffnet sich im Browser.
+
+
+ZUM HOMESCREEN HINZUFUEGEN (App-Icon auf dem iPhone):
+------------------------------------------------------
+7. In Safari: Tippe auf das Teilen-Symbol
+   (Viereck mit Pfeil nach oben, unten in der Leiste)
+
+8. Scrolle herunter und tippe:
+   "Zum Home-Bildschirm" / "Add to Home Screen"
+
+9. Bestaetigen - fertig!
+   Jetzt gibt es ein MedienTracker-Icon auf dem Startbildschirm.
+
+
+WICHTIGE HINWEISE:
+-------------------
+- Das schwarze PowerShell-Fenster auf dem PC MUSS offen bleiben
+  solange du die App auf dem iPhone nutzt!
+
+- Wenn du den PC ausschaltest oder das Fenster schliessen,
+  funktioniert die App auf dem iPhone nicht mehr.
+
+- Die gespeicherten Daten bleiben aber erhalten!
+  Beim naechsten Start einfach den Server wieder starten.
+
+- Die IP-Adresse kann sich aendern wenn du dich neu ins WLAN
+  einloggst. Dann einfach das Skript nochmal starten und
+  die neue URL eingeben.
+
+
+PROBLEME?
+----------
+Problem: "Seite nicht geladen" auf dem iPhone
+Loesung: Pruefe ob PC und iPhone im selben WLAN sind.
+          Starte start_server.ps1 als Administrator.
+
+Problem: PowerShell oeffnet sich und schliesst sofort
+Loesung: Windows-Sicherheitsrichtlinie blockiert das Skript.
+          Oeffne PowerShell als Administrator und tippe:
+          Set-ExecutionPolicy RemoteSigned
+          Dann start_server.ps1 nochmal starten.
+
+Problem: "Zugriff verweigert" beim Starten
+Loesung: Rechtsklick auf start_server.ps1
+          -> "Als Administrator ausfuehren"
+
+============================================================
+  Deine URL (hier ausfullen nachdem Server gestartet):
+  
+  http://____________________:8080
+  
+============================================================

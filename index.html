@@ -1,0 +1,404 @@
+﻿<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MedienTracker">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0ea5e9">
+  <meta name="description" content="Verwalte deine DVDs, Buecher, CDs und Spiele">
+  <title>MedienTracker</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ===== HEADER ===== -->
+  <header id="app-header">
+    <button id="back-btn" class="hidden" aria-label="Zurueck">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <h1 id="page-title">MedienTracker</h1>
+    <div id="header-actions">
+      <span id="sync-status" title="Sync-Status"></span>
+    </div>
+  </header>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main id="main-content">
+
+    <!-- *** DASHBOARD *** -->
+    <div id="view-dashboard" class="view active">
+      <div class="dashboard">
+        <div class="dashboard-greeting">
+          <h2>Meine Sammlung</h2>
+          <p>Hier ist deine Medien-Uebersicht</p>
+        </div>
+
+        <div id="firebase-banner" class="firebase-banner hidden">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>Cloud-Sync inaktiv. <a href="setup_anleitung.html" target="_blank">Firebase einrichten</a></span>
+        </div>
+
+        <!-- Kategorien-Kacheln -->
+        <div class="stats-grid" id="stats-grid">
+          <!-- Wird per JS befuellt -->
+        </div>
+
+        <!-- Zuletzt hinzugefuegt -->
+        <div class="section-header" style="padding: 0 16px; margin-bottom: 10px;">
+          <span class="section-title">Zuletzt hinzugefuegt</span>
+        </div>
+        <div class="recent-list" id="recent-list">
+          <!-- Wird per JS befuellt -->
+        </div>
+
+        <!-- Verliehen Quick-View -->
+        <div id="lent-section" style="padding: 0 16px 16px;">
+          <div class="section-header" style="margin-bottom: 10px;">
+            <span class="section-title">Derzeit verliehen</span>
+            <button class="section-link" onclick="App.navigate('verliehen')">Alle anzeigen</button>
+          </div>
+          <div id="lent-quick">
+            <!-- Wird per JS befuellt -->
+          </div>
+        </div>
+
+        <!-- Theme Toggle -->
+        <div style="padding: 0 16px 24px;">
+          <div class="form-section">
+            <div class="theme-toggle-row">
+              <span style="font-size:0.9rem; font-weight:600;">Dark Mode</span>
+              <div id="theme-toggle" class="toggle-switch on" onclick="App.toggleTheme()" aria-label="Dark Mode umschalten"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- *** KATEGORIE-ANSICHT *** -->
+    <div id="view-kategorie" class="view">
+      <!-- Tab Bar -->
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="sammlung" id="tab-sammlung">
+          Sammlung
+        </button>
+        <button class="tab-btn" data-tab="wunschliste" id="tab-wunschliste">
+          Wunschliste
+        </button>
+      </div>
+
+      <!-- Filter & Sort Bar -->
+      <div class="filter-bar" id="filter-bar">
+        <button class="filter-chip" id="filter-genre-btn" onclick="App.openFilterGenre()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          Genre
+        </button>
+        <button class="filter-chip" id="filter-fsk-btn" onclick="App.openFilterFSK()">
+          FSK
+        </button>
+        <button class="filter-chip" id="filter-bewertet-btn" onclick="App.toggleFilterBewertet()">
+          &#9733; Bewertet
+        </button>
+        <button class="filter-chip" id="filter-verliehen-btn" onclick="App.toggleFilterVerliehen()">
+          Verliehen
+        </button>
+        <select class="sort-select" id="sort-select" onchange="App.setSort(this.value)">
+          <option value="az">A &rarr; Z</option>
+          <option value="za">Z &rarr; A</option>
+          <option value="bewertung">Bewertung</option>
+          <option value="jahr">Jahr</option>
+          <option value="neu">Neueste</option>
+        </select>
+      </div>
+
+      <!-- Item List -->
+      <div id="kategorie-list" class="item-list">
+        <!-- Wird per JS befuellt -->
+      </div>
+    </div>
+
+    <!-- *** ARTIKEL HINZUFUEGEN / BEARBEITEN *** -->
+    <div id="view-form" class="view">
+      <!-- Schritt 1: Kategorie waehlen (nur bei Neu) -->
+      <div id="form-step-kat" class="form-view" style="display:none;">
+        <p style="padding: 0 0 16px; color: var(--text2); font-size:0.9rem;">
+          Fuer welche Kategorie moechtest du einen Artikel hinzufuegen?
+        </p>
+        <div class="kat-grid" id="kat-grid">
+          <!-- Wird per JS befuellt -->
+        </div>
+      </div>
+
+      <!-- Schritt 2: Barcode-Scan Option (nur bei Neu) -->
+      <div id="form-step-scan" class="form-view" style="display:none;">
+        <div class="form-section">
+          <div class="form-section-title">Artikel-Daten laden</div>
+          <div style="padding: 16px; display:flex; flex-direction:column; gap:10px;">
+            <button class="btn btn-full" id="scan-barcode-btn" style="background:var(--primary);color:white;" onclick="App.openScanner()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5v14"/><path d="M8 5v14"/><path d="M12 5v14"/><path d="M17 5v14"/><path d="M21 5v14"/></svg>
+              Barcode / ISBN scannen
+            </button>
+            <button class="btn btn-full" id="skip-scan-btn" style="background:var(--surface);border:1px solid var(--border);" onclick="App.skipScan()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Manuell eingeben
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schritt 3: Formular -->
+      <div id="form-step-fields" class="form-view" style="display:none;">
+        <form id="artikel-form" onsubmit="App.saveArtikel(event)" novalidate>
+
+          <!-- Cover -->
+          <div class="form-section">
+            <div class="form-section-title">Cover-Bild</div>
+            <div style="display:flex; justify-content:center; padding: 12px 16px 0;">
+              <div class="cover-preview" id="cover-preview" onclick="document.getElementById('cover-upload').click()">
+                <div class="cover-preview-placeholder" id="cover-placeholder">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  <span>Bild hinzufuegen</span>
+                </div>
+                <img id="cover-img" style="display:none; width:100%; height:100%; object-fit:cover;" alt="Cover">
+              </div>
+            </div>
+            <div class="cover-actions">
+              <button type="button" class="filter-chip" onclick="document.getElementById('cover-upload').click()">
+                Foto hochladen
+              </button>
+              <button type="button" class="filter-chip" onclick="App.openCoverUrlDialog()">
+                URL eingeben
+              </button>
+            </div>
+            <input type="file" id="cover-upload" accept="image/*" style="display:none" onchange="App.handleCoverUpload(event)">
+            <input type="hidden" id="cover-data" name="coverBild">
+          </div>
+
+          <!-- Hauptdaten -->
+          <div class="form-section">
+            <div class="form-section-title">Informationen</div>
+
+            <div class="form-row">
+              <label class="form-label required" for="f-titel">Titel</label>
+              <input class="form-input" type="text" id="f-titel" name="titel" placeholder="Pflichtfeld" required autocomplete="off">
+            </div>
+            <div class="form-row">
+              <label class="form-label" for="f-jahr">Jahr</label>
+              <input class="form-input" type="number" id="f-jahr" name="erscheinungsjahr" placeholder="z.B. 2024" min="1900" max="2100" inputmode="numeric">
+            </div>
+            <div class="form-row">
+              <label class="form-label" for="f-genre">Genre</label>
+              <select class="form-select" id="f-genre" name="genre">
+                <option value="">-- waehlen --</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label class="form-label" for="f-band">Band / Staffel</label>
+              <input class="form-input" type="text" id="f-band" name="band" placeholder="z.B. Band 3">
+            </div>
+            <div class="form-row">
+              <label class="form-label" for="f-dauer">Spieldauer</label>
+              <input class="form-input" type="text" id="f-dauer" name="spieldauer" placeholder="z.B. 120 Min">
+            </div>
+            <div class="form-row">
+              <label class="form-label" for="f-fsk">FSK</label>
+              <select class="form-select" id="f-fsk" name="fsk">
+                <option value="">-- waehlen --</option>
+                <option>FSK 0</option>
+                <option>FSK 6</option>
+                <option>FSK 12</option>
+                <option>FSK 16</option>
+                <option>FSK 18</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Bewertung -->
+          <div class="form-section">
+            <div class="form-section-title">Bewertung</div>
+            <div class="form-row" style="justify-content:center;">
+              <div class="rating-input" id="rating-input" role="group" aria-label="Bewertung">
+                <button type="button" class="rating-star" data-val="1" aria-label="1 Stern">
+                  <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </button>
+                <button type="button" class="rating-star" data-val="2" aria-label="2 Sterne">
+                  <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </button>
+                <button type="button" class="rating-star" data-val="3" aria-label="3 Sterne">
+                  <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </button>
+                <button type="button" class="rating-star" data-val="4" aria-label="4 Sterne">
+                  <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </button>
+                <button type="button" class="rating-star" data-val="5" aria-label="5 Sterne">
+                  <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </button>
+              </div>
+              <input type="hidden" id="f-bewertung" name="bewertung" value="0">
+            </div>
+          </div>
+
+          <!-- Verleih -->
+          <div class="form-section">
+            <div class="form-section-title">Verleih</div>
+            <div class="form-row">
+              <label class="form-label" for="f-verliehen">Verliehen an</label>
+              <input class="form-input" type="text" id="f-verliehen" name="verliehenAn" placeholder="Name der Person" autocomplete="off">
+            </div>
+          </div>
+
+          <!-- Wunschliste Toggle -->
+          <div class="form-section">
+            <div class="form-section-title">Status</div>
+            <div class="form-row">
+              <label class="form-label" for="f-wunschliste">Auf Wunschliste</label>
+              <div id="f-wunschliste-toggle" class="toggle-switch" onclick="App.toggleWunschliste()" aria-label="Wunschliste" role="switch" aria-checked="false"></div>
+              <input type="hidden" id="f-wunschliste" name="istWunschliste" value="false">
+            </div>
+          </div>
+
+          <!-- Versteckte Felder -->
+          <input type="hidden" id="f-id"       name="id">
+          <input type="hidden" id="f-kat"      name="kategorie">
+          <input type="hidden" id="f-erstellt" name="erstelltAm">
+
+          <!-- Speichern Button -->
+          <div style="padding: 16px;">
+            <button type="submit" class="btn btn-save">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Speichern
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- *** SUCHE *** -->
+    <div id="view-suche" class="view">
+      <div class="search-bar-wrap">
+        <div class="search-bar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" id="search-input" placeholder="Titel, Genre, Verliehen an..." autocomplete="off" autocorrect="off" spellcheck="false" inputmode="search">
+          <button id="search-clear" class="search-clear" style="display:none;" onclick="App.clearSearch()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="search-results" class="search-results">
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <h3>Suche</h3>
+          <p>Gib einen Suchbegriff ein um deine Sammlung zu durchsuchen</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- *** VERLIEHEN *** -->
+    <div id="view-verliehen" class="view">
+      <div class="verliehen-view">
+        <div id="verliehen-list">
+          <!-- Wird per JS befuellt -->
+        </div>
+      </div>
+    </div>
+
+    <!-- *** DETAIL-ANSICHT *** -->
+    <div id="view-detail" class="view">
+      <div class="detail-view" id="detail-content">
+        <!-- Wird per JS befuellt -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===== BARCODE SCANNER MODAL ===== -->
+  <div id="scanner-modal" class="hidden">
+    <div class="scanner-header">
+      <h2>Barcode scannen</h2>
+      <button class="scanner-close" onclick="App.closeScanner()" aria-label="Schliessen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="scanner-viewport"></div>
+    <p class="scanner-hint">Halte den Barcode oder ISBN in den Rahmen</p>
+    <div class="scanner-manual">
+      <label for="scanner-manual-input">Barcode manuell eingeben:</label>
+      <input type="text" id="scanner-manual-input" class="scanner-manual-input"
+             placeholder="ISBN / EAN eingeben" inputmode="numeric" pattern="[0-9]*">
+      <div style="margin-top:10px;">
+        <button class="btn btn-full" style="background:var(--primary);color:white;"
+                onclick="App.handleManualBarcode()">
+          Suchen
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST CONTAINER ===== -->
+  <div id="toast-container" role="status" aria-live="polite"></div>
+
+  <!-- ===== CONFIRM DIALOG ===== -->
+  <div id="confirm-overlay" class="hidden" role="dialog" aria-modal="true">
+    <div class="confirm-dialog">
+      <div class="confirm-dialog-title" id="confirm-title">Bestaetigen</div>
+      <div class="confirm-dialog-msg" id="confirm-msg"></div>
+      <div class="confirm-btns">
+        <button class="confirm-btn cancel" id="confirm-cancel">Abbrechen</button>
+        <button class="confirm-btn ok" id="confirm-ok">Loeschen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BOTTOM NAVIGATION ===== -->
+  <nav id="bottom-nav" aria-label="Hauptnavigation">
+    <button class="nav-item active" data-view="dashboard" onclick="App.navigate('dashboard')" aria-label="Startseite">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Start
+    </button>
+    <button class="nav-item" data-view="sammlung" onclick="App.navigate('sammlung')" aria-label="Sammlung">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Sammlung
+    </button>
+    <button class="nav-item" data-view="hinzufuegen" onclick="App.navigate('hinzufuegen')" aria-label="Hinzufuegen">
+      <div class="nav-add">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </div>
+    </button>
+    <button class="nav-item" data-view="suche" onclick="App.navigate('suche')" aria-label="Suche">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Suche
+    </button>
+    <button class="nav-item" data-view="verliehen" onclick="App.navigate('verliehen')" aria-label="Verliehen">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Verliehen
+    </button>
+  </nav>
+
+</div><!-- /#app -->
+
+<!-- ===== SCRIPTS ===== -->
+
+<!-- Firebase SDK (compat v9) - optional, nur fuer Cloud-Sync -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<!-- Barcode Scanner -->
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+<!-- App-Skripte -->
+<script src="js/db.js"></script>
+<script src="js/api.js"></script>
+<script src="js/scanner.js"></script>
+<script src="js/firebase-sync.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

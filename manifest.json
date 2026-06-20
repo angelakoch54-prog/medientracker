@@ -1,0 +1,48 @@
+﻿{
+  "name": "MedienTracker",
+  "short_name": "MedienTracker",
+  "description": "Verwalte deine DVDs, Buecher, CDs und Spiele - deine persoenliche Mediensammlung",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0a0f1e",
+  "theme_color": "#0ea5e9",
+  "orientation": "portrait-primary",
+  "lang": "de-DE",
+  "categories": ["entertainment", "utilities"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Hinzufuegen",
+      "short_name": "Neu",
+      "description": "Neuen Artikel hinzufuegen",
+      "url": "./#hinzufuegen"
+    },
+    {
+      "name": "Suche",
+      "short_name": "Suche",
+      "description": "In Sammlung suchen",
+      "url": "./#suche"
+    }
+  ]
+}

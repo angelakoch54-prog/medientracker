@@ -1,0 +1,324 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Firebase Setup - MedienTracker</title>
+<style>
+  :root {
+    --bg: #0a0f1e; --surface: #13203a; --surface2: #1a2d4a;
+    --primary: #0ea5e9; --text: #e8f1fb; --text2: #8fa8c8;
+    --success: #10b981; --warning: #f59e0b; --border: rgba(255,255,255,0.08);
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--text);
+    padding: 24px; max-width: 760px; margin: 0 auto;
+    line-height: 1.6; font-size: 16px;
+  }
+  h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; }
+  h2 { font-size: 1.2rem; font-weight: 700; margin: 28px 0 12px; color: var(--primary); }
+  h3 { font-size: 1rem; font-weight: 700; margin: 16px 0 8px; }
+  p, li { color: var(--text2); margin-bottom: 10px; }
+  ul, ol { padding-left: 20px; }
+  li { margin-bottom: 6px; }
+  a { color: var(--primary); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .step {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+  }
+  .step-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px;
+    background: var(--primary); color: white;
+    border-radius: 50%; font-weight: 800; font-size: 0.95rem;
+    margin-bottom: 10px;
+  }
+  .code {
+    background: #050a14; color: #7dd3fc;
+    border-radius: 8px; padding: 14px 16px;
+    font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+    font-size: 0.82rem;
+    overflow-x: auto;
+    margin: 10px 0;
+    border: 1px solid rgba(14,165,233,0.2);
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  .highlight { color: #fbbf24; }
+  .info-box {
+    background: rgba(14,165,233,0.1); border: 1px solid rgba(14,165,233,0.25);
+    border-radius: var(--radius); padding: 14px 16px; margin: 12px 0;
+    font-size: 0.88rem; color: var(--text2);
+  }
+  .warn-box {
+    background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25);
+    border-radius: var(--radius); padding: 14px 16px; margin: 12px 0;
+    font-size: 0.88rem; color: #fcd34d;
+  }
+  .success-box {
+    background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25);
+    border-radius: var(--radius); padding: 14px 16px; margin: 12px 0;
+    font-size: 0.88rem; color: #6ee7b7;
+  }
+  .header-badge {
+    display: inline-block; background: var(--primary);
+    color: white; font-size: 0.72rem; font-weight: 700;
+    padding: 3px 10px; border-radius: 20px; margin-bottom: 16px;
+    letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
+  th { color: var(--text3, var(--text2)); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
+  td { color: var(--text2); }
+  td:first-child { color: var(--text); font-family: monospace; font-size: 0.82rem; }
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--surface); color: var(--primary);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 14px; font-size: 0.88rem; font-weight: 600;
+    cursor: pointer; margin-bottom: 24px; text-decoration: none;
+  }
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back-btn">&larr; Zurueck zur App</a>
+
+<div class="header-badge">Einrichtungsanleitung</div>
+<h1>Firebase Setup</h1>
+<p style="color:var(--text); font-size:1rem;">
+  Diese Anleitung zeigt Angela Schritt fuer Schritt, wie sie Firebase einrichtet,
+  um ihre Mediensammlung zwischen iPhone und iPad zu synchronisieren.
+</p>
+
+<div class="info-box">
+  <strong>Was du bekommst:</strong> Kostenloses Firebase-Konto &rarr; Echtzeit-Sync zwischen all deinen Geraeten &rarr; Automatisches Backup in der Cloud
+</div>
+
+<!-- SCHRITT 1 -->
+<h2>Schritt 1: Firebase-Konto erstellen</h2>
+<div class="step">
+  <div class="step-num">1</div>
+  <p>Gehe zu <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a></p>
+  <p>Melde dich mit deinem Google-Konto an (oder erstelle kostenlos eines).</p>
+</div>
+
+<!-- SCHRITT 2 -->
+<h2>Schritt 2: Neues Projekt erstellen</h2>
+<div class="step">
+  <div class="step-num">2</div>
+  <ol>
+    <li>Klicke auf <strong>&ldquo;Projekt erstellen&rdquo;</strong> (grosses Plus-Symbol)</li>
+    <li>Gib einen Projektnamen ein, z.B. <strong>MedienTracker</strong></li>
+    <li>Google Analytics: kann deaktiviert werden (nicht benoetigt)</li>
+    <li>Klicke auf <strong>&ldquo;Projekt erstellen&rdquo;</strong></li>
+    <li>Warte bis das Projekt erstellt ist, dann auf <strong>&ldquo;Weiter&rdquo;</strong></li>
+  </ol>
+</div>
+
+<!-- SCHRITT 3 -->
+<h2>Schritt 3: Web-App hinzufuegen</h2>
+<div class="step">
+  <div class="step-num">3</div>
+  <ol>
+    <li>Im Projekt-Dashboard klicke auf das <strong>&ldquo;&lt;/&gt;&rdquo; (Web)</strong>-Symbol</li>
+    <li>App-Spitzname eingeben: z.B. <strong>MedienTracker Web</strong></li>
+    <li><em>Kein</em> Hosting einrichten (Haekchen NICHT setzen)</li>
+    <li>Klicke auf <strong>&ldquo;App registrieren&rdquo;</strong></li>
+    <li>Du siehst jetzt deinen <strong>firebaseConfig</strong>-Code</li>
+  </ol>
+  <div class="warn-box">
+    Wichtig: Kopiere den gesamten Config-Block - du brauchst ihn in Schritt 5!
+  </div>
+  <p>Der Code sieht ungefaehr so aus:</p>
+  <div class="code">const firebaseConfig = {
+  apiKey:            <span class="highlight">"AIzaSyXXXXXXXXXXXXXXXXXXXX"</span>,
+  authDomain:        <span class="highlight">"meinprojekt.firebaseapp.com"</span>,
+  projectId:         <span class="highlight">"meinprojekt"</span>,
+  storageBucket:     <span class="highlight">"meinprojekt.appspot.com"</span>,
+  messagingSenderId: <span class="highlight">"123456789012"</span>,
+  appId:             <span class="highlight">"1:123456789012:web:abcdef123456"</span>
+};</div>
+</div>
+
+<!-- SCHRITT 4 -->
+<h2>Schritt 4: Firestore einrichten</h2>
+<div class="step">
+  <div class="step-num">4</div>
+  <ol>
+    <li>Im linken Menue unter <strong>&ldquo;Erstellen&rdquo;</strong> auf <strong>&ldquo;Firestore Database&rdquo;</strong> klicken</li>
+    <li>Klicke auf <strong>&ldquo;Datenbank erstellen&rdquo;</strong></li>
+    <li>Waehlbar: <strong>&ldquo;Im Testmodus starten&rdquo;</strong> (einfacher fuer den Anfang)</li>
+    <li>Region: <strong>europe-west3 (Frankfurt)</strong> waehlen</li>
+    <li>Klicke auf <strong>&ldquo;Weiter&rdquo;</strong> und dann <strong>&ldquo;Aktivieren&rdquo;</strong></li>
+  </ol>
+</div>
+
+<!-- SCHRITT 4b: Sicherheitsregeln -->
+<div class="step">
+  <h3>Sicherheitsregeln setzen</h3>
+  <p>Damit nur du auf deine Daten zugreifen kannst:</p>
+  <ol>
+    <li>In der Firestore-Datenbank auf <strong>&ldquo;Regeln&rdquo;</strong> klicken</li>
+    <li>Den bestehenden Text ersetzen mit:</li>
+  </ol>
+  <div class="code">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null &amp;&amp; request.auth.uid == userId;
+    }
+  }
+}</div>
+  <ol start="3">
+    <li>Klicke auf <strong>&ldquo;Veroeffentlichen&rdquo;</strong></li>
+  </ol>
+</div>
+
+<!-- SCHRITT 5 -->
+<h2>Schritt 5: Anonymous Auth aktivieren</h2>
+<div class="step">
+  <div class="step-num">5</div>
+  <ol>
+    <li>Im linken Menue unter <strong>&ldquo;Erstellen&rdquo;</strong> auf <strong>&ldquo;Authentication&rdquo;</strong> klicken</li>
+    <li>Klicke auf <strong>&ldquo;Erste Schritte&rdquo;</strong></li>
+    <li>Unter <strong>&ldquo;Anmeldemethoden&rdquo;</strong> klicke auf <strong>&ldquo;Anonym&rdquo;</strong></li>
+    <li>Schalte die Option <strong>&ldquo;Aktivieren&rdquo;</strong> ein</li>
+    <li>Klicke auf <strong>&ldquo;Speichern&rdquo;</strong></li>
+  </ol>
+</div>
+
+<!-- SCHRITT 6 -->
+<h2>Schritt 6: Konfiguration in die App eintragen</h2>
+<div class="step">
+  <div class="step-num">6</div>
+  <p>Oeffne die Datei <code>js/firebase-sync.js</code> in einem Texteditor (z.B. Editor oder Notepad++).</p>
+  <p>Suche diesen Abschnitt (ganz oben):</p>
+  <div class="code">const FIREBASE_CONFIG = {
+  apiKey:            <span class="highlight">"DEINE_API_KEY"</span>,
+  authDomain:        <span class="highlight">"DEIN_PROJEKT.firebaseapp.com"</span>,
+  projectId:         <span class="highlight">"DEIN_PROJEKT_ID"</span>,
+  storageBucket:     <span class="highlight">"DEIN_PROJEKT.appspot.com"</span>,
+  messagingSenderId: <span class="highlight">"DEINE_SENDER_ID"</span>,
+  appId:             <span class="highlight">"DEINE_APP_ID"</span>
+};</div>
+  <p>Ersetze die Platzhalter mit den Werten aus Schritt 3:</p>
+  <table>
+    <tr><th>Platzhalter</th><th>Ersetzen durch</th></tr>
+    <tr><td>DEINE_API_KEY</td><td>apiKey aus Firebase Console</td></tr>
+    <tr><td>DEIN_PROJEKT.firebaseapp.com</td><td>authDomain aus Firebase Console</td></tr>
+    <tr><td>DEIN_PROJEKT_ID</td><td>projectId aus Firebase Console</td></tr>
+    <tr><td>DEIN_PROJEKT.appspot.com</td><td>storageBucket aus Firebase Console</td></tr>
+    <tr><td>DEINE_SENDER_ID</td><td>messagingSenderId aus Firebase Console</td></tr>
+    <tr><td>DEINE_APP_ID</td><td>appId aus Firebase Console</td></tr>
+  </table>
+  <p>Speichere die Datei und lade die App neu.</p>
+</div>
+
+<!-- SCHRITT 7 -->
+<h2>Schritt 7: App auf Webserver / iPhone installieren</h2>
+<div class="step">
+  <div class="step-num">7</div>
+  <div class="warn-box">
+    Die App muss auf einem Webserver laufen (nicht einfach als lokale Datei oeffnen),
+    damit der Service Worker und Firebase korrekt funktionieren.
+  </div>
+  <h3>Option A: Kostenloser Firebase Hosting (empfohlen)</h3>
+  <ol>
+    <li>Im Firebase-Dashboard links auf <strong>&ldquo;Hosting&rdquo;</strong> klicken</li>
+    <li>Klicke auf <strong>&ldquo;Erste Schritte&rdquo;</strong></li>
+    <li>Firebase CLI installieren (erfordert Node.js):
+      <div class="code">npm install -g firebase-tools</div>
+    </li>
+    <li>Im MedienTracker-Ordner:
+      <div class="code">firebase login
+firebase init hosting
+firebase deploy</div>
+    </li>
+    <li>Du bekommst eine URL wie: <strong>meinprojekt.web.app</strong></li>
+  </ol>
+
+  <h3>Option B: GitHub Pages (kostenlos, kein Node noetig)</h3>
+  <ol>
+    <li>Erstelle ein kostenloses Konto auf <a href="https://github.com" target="_blank">github.com</a></li>
+    <li>Erstelle ein neues Repository (z.B. medientracker)</li>
+    <li>Lade alle MedienTracker-Dateien hoch</li>
+    <li>In Repository-Einstellungen: <strong>Pages &rarr; Deploy from branch &rarr; main</strong></li>
+    <li>Deine App ist erreichbar unter: <strong>deinname.github.io/medientracker</strong></li>
+  </ol>
+
+  <h3>Option C: Lokaler Entwicklungsserver (fuer Testen)</h3>
+  <p>Falls Python installiert ist:</p>
+  <div class="code">cd C:\Users\info\Desktop\MedienTracker
+python -m http.server 8080</div>
+  <p>Dann im Browser oeffnen: <strong>http://localhost:8080</strong></p>
+</div>
+
+<!-- SCHRITT 8 -->
+<h2>Schritt 8: App auf iPhone/iPad installieren</h2>
+<div class="step">
+  <div class="step-num">8</div>
+  <ol>
+    <li>Oeffne die App-URL in <strong>Safari</strong> auf dem iPhone/iPad</li>
+    <li>Tippe auf das <strong>Teilen-Symbol</strong> (Viereck mit Pfeil nach oben)</li>
+    <li>Scrolle runter und tippe auf <strong>&ldquo;Zum Home-Bildschirm hinzufuegen&rdquo;</strong></li>
+    <li>Gib den Namen <strong>MedienTracker</strong> ein</li>
+    <li>Tippe auf <strong>&ldquo;Hinzufuegen&rdquo;</strong></li>
+  </ol>
+  <div class="success-box">
+    Die App erscheint jetzt als echte App auf dem Homescreen und laeuft im Vollbildmodus ohne Safari-Leisten!
+  </div>
+</div>
+
+<!-- OPTIONAL: OMDb API -->
+<h2>Optional: OMDb API Key (fuer DVD-Daten beim Barcode-Scan)</h2>
+<div class="step">
+  <ol>
+    <li>Gehe zu <a href="https://www.omdbapi.com/apikey.aspx" target="_blank">omdbapi.com/apikey.aspx</a></li>
+    <li>Waehle <strong>&ldquo;FREE! (1,000 daily limit)&rdquo;</strong></li>
+    <li>Gib deine E-Mail ein und bestatige</li>
+    <li>Oeffne <code>js/api.js</code> und ersetze:
+      <div class="code">let OMDB_KEY = <span class="highlight">'DEIN_OMDB_KEY'</span>;</div>
+      mit deinem echten Key.
+    </li>
+  </ol>
+  <p>Ohne OMDb-Key funktioniert die Buchsuche (Google Books) weiterhin kostenlos und ohne Registrierung.</p>
+</div>
+
+<!-- FAQ -->
+<h2>Haeufige Fragen</h2>
+<div class="step">
+  <h3>Werden meine Daten sicher gespeichert?</h3>
+  <p>Ja. Firebase speichert Daten verschluesselt in Google-Rechenzentren. Mit den Sicherheitsregeln aus Schritt 4b kann nur du selbst auf deine Daten zugreifen.</p>
+
+  <h3>Was passiert wenn ich offline bin?</h3>
+  <p>Die App speichert alles lokal auf dem Geraet (IndexedDB). Sobald du wieder online bist, werden die Aenderungen automatisch synchronisiert.</p>
+
+  <h3>Kann ich die App auf mehreren Geraeten nutzen?</h3>
+  <p>Ja! Installiere die App auf iPhone und iPad, trage dieselbe Firebase-Config ein, und alle Aenderungen werden in Echtzeit synchronisiert.</p>
+
+  <h3>Ist Firebase kostenlos?</h3>
+  <p>Der Spark-Plan (kostenlos) reicht fuer eine persoenliche Mediensammlung voellig aus. Er erlaubt 1 GB Daten und 50.000 Lesezugriffe pro Tag.</p>
+
+  <h3>Wie sichere ich meine Daten?</h3>
+  <p>Firebase macht automatisch Backups. Zusaetzlich kannst du in der Firebase Console unter Firestore alle Daten exportieren.</p>
+</div>
+
+<div class="success-box" style="margin-top:24px; font-size:0.95rem;">
+  Alles eingerichtet? Gehe zurueck zur App und pruefe ob der Sync-Punkt in der Titelleiste gruen leuchtet!
+</div>
+
+<p style="text-align:center; margin-top:32px; font-size:0.8rem; color:var(--text3, #5a7a9f);">
+  MedienTracker &bull; Deine persoenliche Mediensammlung
+</p>
+
+</body>
+</html>
